@@ -67,28 +67,26 @@ export const CharacterListCard = ({ character }: CharacterListCardProps) => {
           </div>
         </Link>
         <div className='flex justify-end gap-2 mt-2'>
-          <CharacterVoteButton
-            characterId={character.key}
-            characterName={character.character_name}
-            variant='compact'
-            enableVoteCount={false}
-          />
+          {character.is_biccame_musume && (
+            <CharacterVoteButton
+              characterId={character.key}
+              characterName={character.character_name}
+              variant='compact'
+              enableVoteCount={false}
+            />
+          )}
           <Button
             size='sm'
             variant='outline'
             asChild={!isGraduated}
             disabled={isGraduated}
             className='rounded-full px-4 h-7 text-xs font-semibold'
-            onClick={(e) => {
-              e.stopPropagation()
-              if (isGraduated) return
-            }}
           >
             {isGraduated ? (
               <span>フォロー</span>
             ) : (
               <a
-                href={`https://twitter.com/${character.twitter_screen_name}`}
+                href={`https://twitter.com/intent/follow?screen_name=${character.twitter_screen_name}`}
                 target='_blank'
                 rel='noopener noreferrer'
               >
