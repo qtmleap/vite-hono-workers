@@ -84,8 +84,13 @@ export const CharacterCard = ({ character }: CharacterCardProps) => {
           </div>
 
           <div className='flex flex-wrap gap-2 pt-2'>
-            {character.twitter_url && (
-              <a href={character.twitter_url} target='_blank' rel='noopener noreferrer' className='inline-flex'>
+            {character.twitter_screen_name && (
+              <a
+                href={`https://twitter.com/${character.twitter_screen_name}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='inline-flex'
+              >
                 <Badge variant='outline' className='hover:bg-blue-50 cursor-pointer border-blue-300 text-blue-700'>
                   <Twitter className='h-3 w-3 mr-1' />
                   Twitter

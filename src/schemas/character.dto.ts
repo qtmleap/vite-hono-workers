@@ -10,7 +10,7 @@ export const CharacterSchema = z.object({
   key: z.string(),
   description: z.string(),
   profile_image_url: z.string().url().optional(),
-  twitter_url: z.string().url().optional(),
+  twitter_screen_name: z.string().optional(),
   zipcode: z.string().optional(),
   address: z.string().optional(),
   prefecture: z.string().optional(),

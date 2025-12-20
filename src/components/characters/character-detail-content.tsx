@@ -70,13 +70,13 @@ export const CharacterDetailContent = ({ character }: CharacterDetailContentProp
                 <p className='text-lg text-pink-600 font-medium truncate'>{character.store_name}</p>
               </div>
               <div className='shrink-0 flex flex-col gap-2'>
-                {character.twitter_url && (
+                {character.twitter_screen_name && (
                   <Button
                     asChild
                     className='rounded-full text-xs font-semibold h-7 px-4 bg-pink-600 text-white hover:bg-pink-700'
                   >
                     <a
-                      href={`https://twitter.com/intent/follow?screen_name=${character.twitter_url.split('/').pop()}`}
+                      href={`https://twitter.com/intent/follow?screen_name=${character.twitter_screen_name}`}
                       target='_blank'
                       rel='noopener noreferrer'
                     >

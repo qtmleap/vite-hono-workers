@@ -15,7 +15,7 @@ type CharacterListCardProps = {
  * ビッカメ娘一覧表示用コンパクトカードコンポーネント
  */
 export const CharacterListCard = ({ character }: CharacterListCardProps) => {
-  const isGraduated = !character.twitter_url
+  const isGraduated = !character.twitter_screen_name
 
   return (
     <motion.div
@@ -87,7 +87,11 @@ export const CharacterListCard = ({ character }: CharacterListCardProps) => {
             {isGraduated ? (
               <span>フォロー</span>
             ) : (
-              <a href={character.twitter_url} target='_blank' rel='noopener noreferrer'>
+              <a
+                href={`https://twitter.com/${character.twitter_screen_name}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
                 フォロー
               </a>
             )}

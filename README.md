@@ -84,6 +84,25 @@ VS Codeでプロジェクトを開き、`Cmd/Ctrl + Shift + P`でコマンドパ
 
 ### 開発
 
+#### データ生成
+
+キャラクターデータ (`public/characters.json`) を一から生成する場合：
+
+```zsh
+# TypeScript版（推奨）
+bun scripts/generate_characters.ts
+
+# Python版
+python3 scripts/generate_characters.py
+```
+
+これらのスクリプトは以下の処理を自動で行います：
+1. ビッカメ娘公式サイトからプロフィール情報を取得
+2. 各キャラクターの詳細ページから追加情報を取得
+3. 都道府県情報を抽出・付与
+4. JSONキーをアルファベット順にソート
+5. `public/characters.json`に出力
+
 #### ローカル開発サーバー起動
 
 ```zsh
