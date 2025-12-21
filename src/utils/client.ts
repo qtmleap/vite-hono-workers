@@ -9,7 +9,7 @@ import { AllVoteCountsSchema, VoteCountSchema, VoteRequestSchema, VoteResponseSc
 const api = makeApi([
   {
     method: 'get',
-    path: '/characters.json',
+    path: '/characters',
     alias: 'getCharacters',
     description: 'ビッカメ娘キャラクター一覧を取得',
     response: CharactersSchema

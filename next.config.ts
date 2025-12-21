@@ -4,15 +4,6 @@ const nextConfig: NextConfig = {
   // React Strict Mode
   reactStrictMode: true,
 
-  // Tailwind CSS v4
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        '@': './src'
-      }
-    }
-  },
-
   // 画像最適化
   images: {
     formats: ['image/avif', 'image/webp'],

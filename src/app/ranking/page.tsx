@@ -1,36 +1,26 @@
-'use client'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { charactersQueryKey } from '@/hooks/useCharacters'
+import { getCharacters } from '@/lib/characters'
+import { RankingClient } from './ranking-client'
 
-import { Suspense } from 'react'
-import { LoadingFallback } from '@/components/common/loading-fallback'
-import { RankingList } from '@/components/ranking/ranking-list'
-import { useCharacters } from '@/hooks/useCharacters'
-import { useVoteRanking } from '@/hooks/useVoteRanking'
-
-// 動的レンダリングを強制
+// SSR: リクエストごとにレンダリング
 export const dynamic = 'force-dynamic'
 
 /**
- * ランキングコンテンツコンポーネント
+ * ランキングページ（Server Component）
  */
-const RankingContent = () => {
-  const { data: characters } = useCharacters()
-  const { data: ranking } = useVoteRanking(characters)
+const RankingPage = async () => {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: charactersQueryKey,
+    queryFn: getCharacters
+  })
 
   return (
-    <div className='container mx-auto px-4 py-6 max-w-7xl'>
-      <RankingList characters={ranking} />
-    </div>
-  )
-}
-
-/**
- * ランキングページ
- */
-const RankingPage = () => {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <RankingContent />
-    </Suspense>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <RankingClient />
+    </HydrationBoundary>
   )
 }
 

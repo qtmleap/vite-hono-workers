@@ -1,35 +1,24 @@
-'use client'
-
-import { Suspense } from 'react'
-import { LoadingFallback } from '@/components/common/loading-fallback'
-import { UpcomingEventList } from '@/components/events/upcoming-event-list'
-import { HomeHeader } from '@/components/home/home-header'
-import { LineStickerList } from '@/components/home/line-sticker-list'
-import { useCharacters } from '@/hooks/useCharacters'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { charactersQueryKey } from '@/hooks/useCharacters'
+import { getCharacters } from '@/lib/characters'
+import { HomeClient } from './home-client'
 
 /**
- * トップページコンテンツ
+ * ホームページ（Server Component）
+ * ビルド時にキャラクターデータをprefetchしてSSG
  */
-const HomeContent = () => {
-  const { data: characters } = useCharacters()
+const HomePage = async () => {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: charactersQueryKey,
+    queryFn: getCharacters
+  })
 
   return (
-    <div>
-      <HomeHeader />
-      <UpcomingEventList characters={characters} />
-      <LineStickerList />
-    </div>
-  )
-}
-
-/**
- * ホームページコンポーネント
- */
-const HomePage = () => {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <HomeContent />
-    </Suspense>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <HomeClient />
+    </HydrationBoundary>
   )
 }
 

@@ -1,59 +1,24 @@
-'use client'
-
-import { useAtomValue } from 'jotai'
-import { Suspense, useMemo, useState } from 'react'
-import { regionFilterAtom } from '@/atoms/filterAtom'
-import { sortTypeAtom } from '@/atoms/sortAtom'
-import { CharacterList } from '@/components/characters/character-list'
-import { CharacterSortControl } from '@/components/characters/character-sort-control'
-import { RegionFilterControl } from '@/components/characters/region-filter-control'
-import { LoadingFallback } from '@/components/common/loading-fallback'
-import { useCharacters } from '@/hooks/useCharacters'
-import { categorizeCharacters, filterCharactersByRegion, sortCharacters } from '@/utils/character'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { charactersQueryKey } from '@/hooks/useCharacters'
+import { getCharacters } from '@/lib/characters'
+import { CharactersClient } from './characters-client'
 
 /**
- * キャラクター一覧コンテンツ
+ * キャラクター一覧ページ（Server Component）
  */
-const CharactersContent = () => {
-  const { data: characters } = useCharacters()
-  const sortType = useAtomValue(sortTypeAtom)
-  const regionFilter = useAtomValue(regionFilterAtom)
-  const [randomCounter, setRandomCounter] = useState(0)
+const CharactersPage = async () => {
+  const queryClient = new QueryClient()
 
-  const { sortedMusume, sortedOthers } = useMemo(() => {
-    const filteredCharacters = filterCharactersByRegion(characters, regionFilter)
-    const { musume, others } = categorizeCharacters(filteredCharacters)
-    void randomCounter
-    return {
-      sortedMusume: sortCharacters(musume, sortType),
-      sortedOthers: sortCharacters(others, sortType)
-    }
-  }, [characters, sortType, regionFilter, randomCounter])
+  await queryClient.prefetchQuery({
+    queryKey: charactersQueryKey,
+    queryFn: getCharacters
+  })
 
   return (
-    <div className='container mx-auto px-4 py-8'>
-      <div className='max-w-6xl mx-auto mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4'>
-        <RegionFilterControl />
-        <CharacterSortControl onRandomize={() => setRandomCounter((prev) => prev + 1)} />
-      </div>
-      <CharacterList characters={sortedMusume} title='ビッカメ娘' showTitle />
-      {sortedOthers.length > 0 && (
-        <>
-          <div className='my-8 border-t-2 border-gray-300 dark:border-gray-600' />
-          <CharacterList characters={sortedOthers} title='ビッカメ娘の関係者' showTitle />
-        </>
-      )}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <CharactersClient />
+    </HydrationBoundary>
   )
 }
-
-/**
- * キャラクター一覧ページ
- */
-const CharactersPage = () => (
-  <Suspense fallback={<LoadingFallback />}>
-    <CharactersContent />
-  </Suspense>
-)
 
 export default CharactersPage

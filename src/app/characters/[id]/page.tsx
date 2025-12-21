@@ -1,43 +1,38 @@
-'use client'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { charactersQueryKey } from '@/hooks/useCharacters'
+import { getCharacters } from '@/lib/characters'
+import { CharacterDetailClient } from './character-detail-client'
 
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import { Suspense, useMemo } from 'react'
-import { CharacterDetailContent } from '@/components/characters/character-detail-content'
-import { LoadingFallback } from '@/components/common/loading-fallback'
-import { Button } from '@/components/ui/button'
-import { useCharacters } from '@/hooks/useCharacters'
+type PageProps = {
+  params: Promise<{ id: string }>
+}
 
 /**
- * キャラクター詳細ページ
+ * ビルド時に全キャラクターのIDを生成（SSG）
  */
-const CharacterDetailPage = ({ params }: { params: { id: string } }) => {
-  const { data: characters } = useCharacters()
+export const generateStaticParams = async () => {
+  const characters = await getCharacters()
+  return characters.map((character) => ({
+    id: character.key
+  }))
+}
 
-  const character = useMemo(() => {
-    return characters.find((c) => c.key === params.id)
-  }, [characters, params.id])
+/**
+ * キャラクター詳細ページ（Server Component）
+ */
+const CharacterDetailPage = async ({ params }: PageProps) => {
+  const { id } = await params
+  const queryClient = new QueryClient()
 
-  if (!character) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-center'>
-          <p className='text-destructive mb-4'>キャラクターが見つかりませんでした</p>
-          <Link href='/characters'>
-            <Button variant='outline'>
-              <ArrowLeft className='h-4 w-4 mr-2' />
-              一覧に戻る
-            </Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  await queryClient.prefetchQuery({
+    queryKey: charactersQueryKey,
+    queryFn: getCharacters
+  })
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <CharacterDetailContent character={character} />
-    </Suspense>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <CharacterDetailClient id={id} />
+    </HydrationBoundary>
   )
 }
 
