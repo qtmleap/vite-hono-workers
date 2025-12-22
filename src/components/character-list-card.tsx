@@ -72,7 +72,7 @@ export const CharacterListCard = ({ character }: CharacterListCardProps) => {
           </div>
         </Link>
         <div className='flex justify-end gap-2 mt-2'>
-          <CharacterVoteButton characterId={character.key} characterName={character.character_name} variant='compact' />
+          <CharacterVoteButton characterId={character.key} variant='compact' />
           <Button
             size='sm'
             variant='outline'
